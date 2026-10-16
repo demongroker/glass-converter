@@ -61,7 +61,7 @@ dialog[open] .glass{animation:pop .35s cubic-bezier(.2,.8,.2,1)}
 .tabs{display:flex;gap:4px;padding:4px;margin:0 0 var(--s4);border-radius:999px}
 .tab{flex:1;min-height:44px;border:0;border-radius:999px;background:transparent;color:var(--mut);font:inherit;font-weight:650;font-size:15px;cursor:pointer;transition:background .25s,color .25s}
 .tab.on{background:linear-gradient(135deg,#7f9cff,#a97dff);color:#fff;box-shadow:0 8px 20px -8px #7f9cff}
-body:not(.tr) #trv{display:none}body.tr #cv{display:none}
+body:not(.tr) #trv{display:none}body:not(.lg) #lgv{display:none}body.tr #cv,body.lg #cv{display:none}
 .seg{display:flex;gap:var(--s2);margin:var(--s2) 0 var(--s4)}.seg .chip{flex:1;justify-content:center;min-height:48px;padding:0 var(--s2);border-radius:14px;font-weight:650;gap:6px}.seg .chip .flag{font-size:18px}
 .seg .chip.on{background:linear-gradient(135deg,#7f9cff,#a97dff);border-color:transparent;color:#fff}
 #trCur .flag{display:none}#trCur .chip{font-size:14px;padding:0 4px}.bd div>span{min-width:0}
@@ -81,6 +81,14 @@ body:not(.tr) #trv{display:none}body.tr #cv{display:none}
 .cut{margin-top:6px;font-size:14px;font-weight:650;color:#6ee7b7}.cut.dn{color:#fca5a5}.mrow .mch{gap:4px}.mrow .mch .chip{min-width:0;font-size:12.5px}.mrow{display:flex;align-items:center;gap:var(--s3);margin-top:var(--s4)}.mrow .mch{flex:1;margin:0}
 .det{margin-top:var(--s4);border-top:1px solid var(--line2);padding-top:var(--s3)}.det summary{cursor:pointer;color:var(--mut);font-size:14px;font-weight:600;padding:6px 0;list-style:none}.det summary::before{content:"▸ ";}.det[open] summary::before{content:"▾ "}
 .det .lbl{margin-top:var(--s3)}
+.btns{display:flex;gap:var(--s2)}.btns .cp{flex:1}.cp.alt{background:var(--glass2);border:1px solid var(--line);box-shadow:none}.btns.sm{margin-top:var(--s4)}.btns.sm .cp{min-height:44px;font-size:13px}
+.mnav{display:flex;align-items:center;justify-content:space-between}.nb{width:40px;height:40px;border-radius:50%;border:1px solid var(--line2);background:var(--glass);color:var(--fg);font-size:22px;cursor:pointer}
+.big{font-size:36px;font-weight:800;letter-spacing:-.03em;color:#6ee7b7;font-variant-numeric:tabular-nums}.big small{font-size:18px;color:var(--mut);font-weight:600;margin-left:6px}
+.deal .v .st{display:inline-block;margin-top:4px;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700}.st.u{background:rgba(251,191,36,.18);color:#fcd34d}.st.p{background:rgba(52,211,153,.16);color:#6ee7b7}
+.ava{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:linear-gradient(135deg,#7f9cff,#a97dff);flex:none}
+.del{flex:none;width:32px;height:32px;margin-left:6px;border-radius:50%;border:1px solid var(--line2);background:transparent;color:var(--mut);cursor:pointer}
+.shr{flex:none;margin-left:8px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--glass2);color:var(--fg);font:inherit;font-size:12px;font-weight:650;cursor:pointer}
+.empty{padding:var(--s4);text-align:center;color:var(--mut);font-size:14px}
 @media (min-width:700px){main{padding-top:64px}}
 html.static *{animation-play-state:paused;transition:none!important}html.static .row{animation:none!important}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -88,7 +96,7 @@ html.static *{animation-play-state:paused;transition:none!important}html.static 
 <div class="blobs" aria-hidden="true"><div class="blob"></div><div class="blob"></div><div class="blob"></div><div class="blob"></div></div>
 <main id="main">
 <header><h1>Converter</h1><div class="upd" aria-live="polite"><span class="dot" id="dot"></span><span id="upd">Loading rates…</span></div></header>
-<nav class="glass tabs" role="tablist"><button class="tab on" id="tabC" role="tab">Convert</button><button class="tab" id="tabT" role="tab">Friend transfer</button></nav>
+<nav class="glass tabs" role="tablist"><button class="tab on" id="tabC" role="tab">Convert</button><button class="tab" id="tabT" role="tab">Transfer</button><button class="tab" id="tabL" role="tab">Log</button></nav>
 <div id="cv">
 <section class="glass card" id="card">
 <label class="lbl" for="amount">Amount</label>
@@ -112,7 +120,7 @@ html.static *{animation-play-state:paused;transition:none!important}html.static 
 <div class="seg" id="trCur"></div>
 <div class="res tres" aria-live="polite"><div class="lbl" id="trRl">Send them</div><div id="trOut"></div><div class="rsub" id="trSub"></div><div class="cut" id="trCut"></div></div>
 <div class="mrow"><span class="lbl">Margin</span><div class="mch" id="trMch"></div></div>
-<button class="cp" id="trCopy">Copy message</button>
+<div class="btns"><button class="cp" id="trCopy">Copy message</button><button class="cp alt" id="trSave">Save deal</button></div>
 <details class="det"><summary>Details · fees & funding</summary>
 <span class="lbl">You fund it with</span><div class="seg" id="trFund"></div>
 <div class="two"><div><label class="lbl" for="trF">Bank fee (Rp)</label><input id="trF" class="fld" inputmode="numeric" placeholder="0"></div>
@@ -120,6 +128,19 @@ html.static *{animation-play-state:paused;transition:none!important}html.static 
 <div class="bd" id="trBd"></div></details>
 </section>
 </div>
+<div id="lgv">
+<section class="glass card lsum"><div class="mnav"><button class="nb" id="lgPrev" aria-label="Previous month">‹</button><div class="lbl" id="lgMon"></div><button class="nb" id="lgNext" aria-label="Next month">›</button></div>
+<div class="lbl" style="margin-top:var(--s3)">Your cut this month</div><div class="big" id="lgCut">—</div><div class="rsub" id="lgStat"></div></section>
+<h2>Who owes me</h2><section class="glass list" id="lgOwe"></section>
+<h2>Deals</h2><section class="glass list" id="lgList"></section>
+<div class="btns sm"><button class="cp alt" id="lgExp">Export JSON</button><button class="cp alt" id="lgCsv">Export CSV</button><button class="cp alt" id="lgImp">Import</button></div>
+<input type="file" id="lgFile" accept="application/json,.json" hidden>
+<div class="foot">Deals are stored only on this phone. Export a backup now and then.</div>
+</div>
+<dialog id="sdlg" aria-label="Save deal"><form class="glass" method="dialog" id="sForm" style="padding:var(--s5)"><div class="lbl">Save deal</div><div class="rsub" id="sSum" style="margin:6px 0 var(--s3)"></div>
+<label class="lbl" for="sName">Friend</label><input id="sName" class="fld" list="sNames" autocomplete="off" required placeholder="Name"><datalist id="sNames"></datalist>
+<div id="sCurW"><div class="lbl" style="margin-top:var(--s3)">They'll pay in</div><div class="seg" id="sCur"></div></div>
+<div class="btns"><button class="cp alt" value="cancel" formnovalidate>Cancel</button><button class="cp" value="ok" id="sOk">Save</button></div></form></dialog>
 <div class="foot">Rates: fawazahmed0 currency-api (daily) · fallback open.er-api.com · USDT/USDC: Binance live, fallback CoinGecko · works offline</div>
 </main>
 <dialog id="dlg" aria-label="Select currency"><div class="glass"><input id="q" placeholder="Search currency" aria-label="Search currency"><div id="all"></div></div></dialog>
@@ -144,7 +165,7 @@ const L=FAV.filter(c=>c!=st.f);$("list").innerHTML=L.map((c,i)=>{const x=conv(am
 
 const TR=Object.assign({md:"B",c:"USD",m:"2",f:"0",a:"1000000",ag:"100",s:"USDT",n:"0"},JSON.parse(localStorage.getItem(LS+":tr2")||"{}"));if(/modeA/.test(location.search))TR.md="A";
 const idf=n=>new Intl.NumberFormat("id-ID").format(n),pn=v=>parseInt(String(v).replace(/\D/g,""))||0,pf=v=>parseFloat(String(v).replace(/,/g,""))||0;
-let trMsg="",CR=JSON.parse(localStorage.getItem(LS+":cr")||"null");N.USDT=["Tether","₮"];N.USDC=["USD Coin","🪙"];
+let trDeal=null,u_=0,sg_=0,trMsg="",CR=JSON.parse(localStorage.getItem(LS+":cr")||"null");N.USDT=["Tether","₮"];N.USDC=["USD Coin","🪙"];
 async function crLoad(){let r=null,src="";
 try{const j=await (await fetch('https://api.binance.com/api/v3/ticker/price?symbols=%5B%22USDTIDR%22,%22USDCIDR%22%5D')).json();r={};j.forEach(x=>r[x.symbol.slice(0,4)]=+x.price);if(!(r.USDT>0&&r.USDC>0))throw 0;src="Binance"}catch(e){
 try{const j=await (await fetch("https://api.coingecko.com/api/v3/simple/price?ids=tether,usd-coin&vs_currencies=idr")).json();r={USDT:j.tether.idr,USDC:j["usd-coin"].idr};if(!(r.USDT>0))throw 0;src="CoinGecko"}catch(e){r=null}}
@@ -164,16 +185,16 @@ $("trFund").innerHTML=btn(["USDT","USDC"],"s");$("trNc").textContent=TR.s;
 $("trAl").textContent=A?"They give me":"They want sent to Indonesia";$("trSym").textContent=A?(SYM[TR.c].trim()||TR.c):"Rp";$("trRl").textContent=A?"Send them":"They pay you";
 const m=pf(TR.m);$("trMch").innerHTML=[0,1,2,3,4,5].map(x=>`<button class="chip${x==m?" on":""}" data-m="${x}">${x}%</button>`).join("");
 const f=pn(TR.f),nf=pf(TR.n),R=coin(TR.s),k=1+m/100,feeI=f+nf*R;
-if(!isFinite(R)){$("trOut").textContent="—";$("trCut").textContent="";$("trSub").textContent=rates?"Rate unavailable":"Waiting for rates…";trMsg="";return}
+if(!isFinite(R)){trDeal=null;$("trOut").textContent="—";$("trCut").textContent="";$("trSub").textContent=rates?"Rate unavailable":"Waiting for rates…";trMsg="";return}
 let I,pays=[],cur=A?TR.c:"USD";
 if(A){const P=pf(TR.ag),rc=rateOf(TR.c);I=Math.max(0,Math.floor((P*rc/k-feeI)/1000)*1000);pays=[[P,TR.c]];
 $("trOut").textContent="Rp "+idf(I);$("trSub").textContent=`for ${M(P,TR.c)} · 1 ${TR.c} = ${rf(rc)} IDR · ${m}% margin`;
 trMsg=`You give me ${M(P,TR.c)} → I send Rp ${idf(I)} (rate 1 ${TR.c} = ${rf(rc/k)} IDR)`}
-else{I=pn(TR.a);const u=up10((I+feeI)/rateOf("USD")*k),sg=up10((I+feeI)/rateOf("SGD")*k);pays=[[u,"USD"]];
+else{I=pn(TR.a);const u=up10((I+feeI)/rateOf("USD")*k),sg=up10((I+feeI)/rateOf("SGD")*k);u_=u;sg_=sg;pays=[[u,"USD"]];
 $("trOut").innerHTML=`<div>${M(u,"USD")}</div><div class="or2">${M(sg,"SGD")}</div>`;$("trSub").textContent=`for Rp ${idf(I)} · ${m}% margin`;
 trMsg=`Send Rp ${idf(I)} → you pay me US$ ${n2(u)} or S$ ${n2(sg)}`}
 const P0=pays[0][0],c0=pays[0][1],cost=(I+f)/R+nf,got=P0*rateOf(c0)/R,pl=got-cost;
-const ci=pl*R,cu=pl*R/rateOf("USD"),ok=pl>=-0.005;$("trCut").className="cut"+(ok?"":" dn");$("trCut").textContent=`Your cut ≈ ${ok?"+":"−"}Rp ${idf(Math.round(Math.abs(ci)))} · ${ok?"+":"−"}US$ ${n2(Math.abs(cu))}`;
+const ci=pl*R,cu=pl*R/rateOf("USD");trDeal={md:TR.md,idr:I,pays:A?pays:[[u_,"USD"],[sg_,"SGD"]],m,cutI:Math.round(ci),cutU:+cu.toFixed(2)};const _z=0,ok=pl>=-0.005;$("trCut").className="cut"+(ok?"":" dn");$("trCut").textContent=`Your cut ≈ ${ok?"+":"−"}Rp ${idf(Math.round(Math.abs(ci)))} · ${ok?"+":"−"}US$ ${n2(Math.abs(cu))}`;
 $("trBd").innerHTML=`<div>${TR.s} sell rate · ${live(TR.s)?CR.src+" live":"USD fallback"}<b>${rf(R)} IDR</b></div><div>USD/SGD daily cross<b>1 SGD = ${conv(1,"SGD","USD").toFixed(4)} USD</b></div><div>Your cost<b>${n2(cost)} ${TR.s}</b></div><div>You receive (${c0})<b>≈ ${n2(got)} ${TR.s}</b></div><div>${pl>=-0.005?"Profit":"Loss"}<b style="color:${pl>=-0.005?"#6ee7b7":"#fca5a5"}">${pl>=-0.005?"+":"−"}${n2(Math.abs(pl))} ${TR.s}</b></div>`}
 function trInp(){const A=TR.md=="A";$("trAmt").value=A?TR.ag:idf(pn(TR.a));$("trAmt").inputMode=A?"decimal":"numeric"}
 $("trAmt").oninput=e=>{if(TR.md=="A"){TR.ag=e.target.value.replace(/[^\d.]/g,"");e.target.value=TR.ag}else{TR.a=String(pn(e.target.value));e.target.value=pn(TR.a)?idf(pn(TR.a)):""}tr()};
@@ -185,8 +206,45 @@ $("trF").value=pn(TR.f)?idf(pn(TR.f)):"";$("trF").oninput=e=>{TR.f=String(pn(e.t
 $("trN").value=pf(TR.n)?TR.n:"";$("trN").oninput=e=>{TR.n=e.target.value.replace(/[^\d.]/g,"");e.target.value=TR.n;tr()};
 $("trCopy").onclick=async()=>{if(!trMsg)return;try{await navigator.clipboard.writeText(trMsg)}catch(e){const t=document.createElement("textarea");t.value=trMsg;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove()}$("trCopy").textContent="Copied ✓";setTimeout(()=>$("trCopy").textContent="Copy message",1500)};
 trInp();crLoad();setInterval(crLoad,300e3);
-function tab(t){document.body.classList.toggle("tr",t);$("tabT").classList.toggle("on",t);$("tabC").classList.toggle("on",!t);$("tabT").setAttribute("aria-selected",t);$("tabC").setAttribute("aria-selected",!t);localStorage.setItem(LS+":tab",t?1:0);if(t)tr()}
-$("tabC").onclick=()=>tab(false);$("tabT").onclick=()=>tab(true);tab(/transfer/.test(location.search)||localStorage.getItem(LS+":tab")=="1");
+const DK=LS+":deals",DEMO=/demo/.test(location.search);
+let D=DEMO?(()=>{const n=new Date(),d=k=>new Date(n.getFullYear(),n.getMonth(),Math.max(1,n.getDate()-k)).getTime();return[
+{id:"1",t:d(0),name:"Rizal",md:"B",idr:1500000,cur:"USD",amt:85.3,m:2,cutI:31800,cutU:1.77,paid:false},
+{id:"2",t:d(1),name:"Dewi",md:"B",idr:2000000,cur:"SGD",amt:145.6,m:3,cutI:58900,cutU:3.28,paid:false},
+{id:"3",t:d(2),name:"Rizal",md:"B",idr:500000,cur:"USD",amt:28.5,m:2,cutI:11400,cutU:.64,paid:false},
+{id:"4",t:d(4),name:"Budi",md:"A",idr:3510000,cur:"USD",amt:200,m:2,cutI:69900,cutU:3.9,paid:true},
+{id:"5",t:d(6),name:"Dewi",md:"B",idr:1000000,cur:"USD",amt:56.9,m:2,cutI:21000,cutU:1.17,paid:true}]})():JSON.parse(localStorage.getItem(DK)||"[]");
+const dsave=()=>{if(!DEMO)localStorage.setItem(DK,JSON.stringify(D));lg()};
+const esc=x=>String(x).replace(/[&<>"']/g,c=>"&#"+c.charCodeAt(0)+";");
+const MS=(v,c)=>(SYM[c]!=null?M(v,c):n2(v)+" "+c);
+let mOff=0,sPick="USD";
+$("trSave").onclick=()=>{if(!trDeal){return}const B=trDeal.md=="B";
+$("sNames").innerHTML=[...new Set(D.map(x=>x.name))].map(n=>`<option value="${esc(n)}">`).join("");
+$("sCurW").style.display=B?"":"none";sPick=trDeal.pays[0][1];
+const sc=()=>{$("sCur").innerHTML=trDeal.pays.map(([v,c])=>`<button type="button" class="chip${c==sPick?" on":""}" data-c="${c}">${MS(v,c)}</button>`).join("")};sc();$("sCur").onclick=e=>{const b=e.target.closest("[data-c]");if(b){sPick=b.dataset.c;sc()}};
+$("sSum").textContent=`Rp ${idf(trDeal.idr)} · ${trDeal.m}% · cut Rp ${idf(trDeal.cutI)}`;$("sName").value="";$("sdlg").showModal();$("sName").focus()};
+$("sdlg").onclose=()=>{if($("sdlg").returnValue!="ok"||!trDeal)return;const nmv=$("sName").value.trim();if(!nmv)return;const pv=trDeal.pays.find(x=>x[1]==sPick)||trDeal.pays[0];
+D.push({id:Date.now().toString(36),t:Date.now(),name:nmv,md:trDeal.md,idr:trDeal.idr,cur:pv[1],amt:pv[0],m:trDeal.m,cutI:trDeal.cutI,cutU:trDeal.cutU,paid:trDeal.md=="A"});dsave();$("trSave").textContent="Saved ✓";setTimeout(()=>$("trSave").textContent="Save deal",1500)};
+function lg(){const n=new Date(),mo=new Date(n.getFullYear(),n.getMonth()+mOff,1),me=new Date(mo.getFullYear(),mo.getMonth()+1,1);
+$("lgMon").textContent=mo.toLocaleDateString(undefined,{month:"long",year:"numeric"});$("lgNext").disabled=mOff>=0;
+const L=D.filter(x=>x.t>=mo&&x.t<me).sort((a,b)=>b.t-a.t),ci=L.reduce((a,x)=>a+x.cutI,0),cu=L.reduce((a,x)=>a+x.cutU,0),vol=L.reduce((a,x)=>a+x.idr,0);
+$("lgCut").innerHTML=`Rp ${idf(ci)}<small>≈ US$ ${n2(cu)}</small>`;$("lgStat").textContent=`${L.length} deal${L.length==1?"":"s"} · volume Rp ${idf(vol)}`;
+const O={};D.filter(x=>!x.paid).forEach(x=>{(O[x.name]=O[x.name]||{})[x.cur]=(O[x.name][x.cur]||0)+x.amt});
+const on=Object.keys(O);$("lgOwe").innerHTML=on.length?on.map(k=>`<div class="row" data-n="${esc(k)}" role="button" tabindex="0" style="animation:none"><span class="ava">${esc(k[0].toUpperCase())}</span><div><div class="code">${esc(k)}</div><div class="nm" style="font-size:12px;color:var(--mut)">Tap = all paid</div></div><div class="v" style="color:#fcd34d">${Object.entries(O[k]).map(([c,v])=>MS(v,c)).join("<br>")}</div><button class="shr" data-s="${esc(k)}">Remind</button></div>`).join(""):`<div class="empty">Nobody owes you 🎉</div>`;
+$("lgList").innerHTML=L.length?L.map(x=>`<div class="row deal" data-id="${x.id}" role="button" tabindex="0" style="animation:none"><div><div class="code">${esc(x.name)}</div><div class="nm" style="font-size:12px;color:var(--mut)">${new Date(x.t).toLocaleDateString(undefined,{day:"numeric",month:"short"})} · Rp ${idf(x.idr)} · ${x.m}% · cut Rp ${idf(x.cutI)}</div></div><div class="v">${MS(x.amt,x.cur)}<br><span class="st ${x.paid?"p":"u"}">${x.paid?"Paid":"Unpaid"}</span></div><button class="del" data-del="${x.id}" aria-label="Delete deal">✕</button></div>`).join(""):`<div class="empty">No deals this month</div>`}
+$("lgPrev").onclick=()=>{mOff--;lg()};$("lgNext").onclick=()=>{if(mOff<0){mOff++;lg()}};
+$("lgList").onclick=e=>{const d=e.target.closest("[data-del]");if(d){if(confirm("Delete this deal?")){D=D.filter(x=>x.id!=d.dataset.del);dsave()}return}const r=e.target.closest(".deal");if(r){const x=D.find(x=>x.id==r.dataset.id);x.paid=!x.paid;dsave()}};
+async function share(t){try{if(navigator.share){await navigator.share({text:t});return}}catch(e){return}try{await navigator.clipboard.writeText(t)}catch(e){}alert("Reminder copied:\n\n"+t)}
+$("lgOwe").onclick=e=>{const sb=e.target.closest("[data-s]");if(sb){const k=sb.dataset.s,u=D.filter(x=>!x.paid&&x.name==k),tot={};u.forEach(x=>tot[x.cur]=(tot[x.cur]||0)+x.amt);
+share(`Hi ${k}! Just a friendly reminder for the transfer${u.length>1?"s":""} I sent to Indonesia (${u.map(x=>"Rp "+idf(x.idr)).join(", ")}). Total: ${Object.entries(tot).map(([c,v])=>MS(v,c)).join(" + ")}. No rush, thank you! 🙏`);return}
+const r=e.target.closest("[data-n]");if(r&&confirm(`Mark all of ${r.dataset.n}'s deals as paid?`)){D.forEach(x=>{if(x.name==r.dataset.n)x.paid=true});dsave()}};
+function dl(name,txt,type){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+const stamp=()=>new Date().toISOString().slice(0,10);
+$("lgExp").onclick=()=>dl(`transfer-deals-${stamp()}.json`,JSON.stringify({app:"glass-converter",v:1,deals:D},null,1),"application/json");
+$("lgCsv").onclick=()=>{const q=v=>`"${String(v).replace(/"/g,'""')}"`;dl(`transfer-deals-${stamp()}.csv`,["date,friend,mode,idr,currency,amount,margin_pct,cut_idr,cut_usd,status",...D.map(x=>[new Date(x.t).toISOString().slice(0,10),q(x.name),x.md=="A"?"they_give":"they_want_sent",x.idr,x.cur,x.amt,x.m,x.cutI,x.cutU,x.paid?"paid":"unpaid"].join(","))].join("\n"),"text/csv")};
+$("lgImp").onclick=()=>$("lgFile").click();
+$("lgFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const j=JSON.parse(await f.text()),arr=Array.isArray(j)?j:j.deals;if(!Array.isArray(arr))throw 0;const ids=new Set(D.map(x=>x.id));let k=0;arr.forEach(x=>{if(x&&x.id&&x.name&&!ids.has(x.id)){D.push(x);k++}});dsave();alert(`Imported ${k} new deal${k==1?"":"s"}.`)}catch(err){alert("That file isn't a valid backup.")}e.target.value=""};
+function tab(t){t=+t||0;document.body.classList.toggle("tr",t==1);document.body.classList.toggle("lg",t==2);["tabC","tabT","tabL"].forEach((id,i)=>{$(id).classList.toggle("on",i==t);$(id).setAttribute("aria-selected",i==t)});localStorage.setItem(LS+":tab",t);if(t==1)tr();if(t==2)lg()}
+$("tabC").onclick=()=>tab(0);$("tabT").onclick=()=>tab(1);$("tabL").onclick=()=>tab(2);tab(/log/.test(location.search)?2:/transfer/.test(location.search)?1:localStorage.getItem(LS+":tab"));
 function ago(){if(!ts)return;const d=new Date(ts).toLocaleDateString(undefined,{day:"numeric",month:"short"});$("upd").textContent="Daily rate · "+d+(navigator.onLine?"":" · offline");$("dot").className="dot"+(navigator.onLine&&(Date.now()-ts)<86400e3*2.5?"":" off")}
 const SRC=["https://latest.currency-api.pages.dev/v1/currencies/usd.json","https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json"];
 async function fa(u){const j=await (await fetch(u,{cache:"no-cache"})).json();const r={};for(const k in j.usd)r[k.toUpperCase()]=j.usd[k];if(!r.EUR)throw 0;return{r,t:Date.parse(j.date+"T12:00:00Z")}}
