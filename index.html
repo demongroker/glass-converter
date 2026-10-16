@@ -58,6 +58,29 @@ dialog[open] .glass{animation:pop .35s cubic-bezier(.2,.8,.2,1)}
 #q{all:unset;display:block;width:calc(100% - 32px);margin:var(--s4);padding:14px var(--s4);border-radius:14px;background:rgba(255,255,255,.07);border:1px solid var(--line2);box-sizing:border-box}
 #all{max-height:60vh;overflow:auto;padding:0 var(--s2) var(--s2)}
 .foot{text-align:center;font-size:12px;color:var(--mut2);margin-top:var(--s5)}
+.tabs{display:flex;gap:4px;padding:4px;margin:0 0 var(--s4);border-radius:999px}
+.tab{flex:1;min-height:44px;border:0;border-radius:999px;background:transparent;color:var(--mut);font:inherit;font-weight:650;font-size:15px;cursor:pointer;transition:background .25s,color .25s}
+.tab.on{background:linear-gradient(135deg,#7f9cff,#a97dff);color:#fff;box-shadow:0 8px 20px -8px #7f9cff}
+body:not(.tr) #trv{display:none}body.tr #cv{display:none}
+.seg{display:flex;gap:var(--s2);margin:var(--s2) 0 var(--s4)}.seg .chip{flex:1;justify-content:center;min-height:48px;padding:0 var(--s2);border-radius:14px;font-weight:650;gap:6px}.seg .chip .flag{font-size:18px}
+.seg .chip.on{background:linear-gradient(135deg,#7f9cff,#a97dff);border-color:transparent;color:#fff}
+#trCur .flag{display:none}#trCur .chip{font-size:14px;padding:0 4px}.bd div>span{min-width:0}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3)}
+.fld{all:unset;box-sizing:border-box;display:block;width:100%;margin-top:var(--s2);padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid var(--line2);font-size:18px;font-weight:650;font-variant-numeric:tabular-nums}
+.fld:focus{border-color:var(--acc)}
+.mch{display:flex;gap:6px;margin-top:var(--s2)}.mch .chip{flex:1;min-height:36px;padding:0;justify-content:center;border-radius:999px;font-size:13px;font-weight:650}.mch .chip.on{background:rgba(157,180,255,.28);border-color:var(--acc)}
+.bd{margin-top:var(--s3);font-size:13px;color:var(--mut);display:grid;gap:4px}.bd div{display:flex;justify-content:space-between;gap:var(--s3)}.bd b{color:var(--fg);font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+.cost{font-size:24px;font-weight:700;margin:var(--s1) 0;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.pl{margin-top:var(--s2);padding:8px 12px;border-radius:12px;font-weight:650;font-size:14px;display:flex;justify-content:space-between}.pl.up{background:rgba(52,211,153,.14);color:#6ee7b7}.pl.dn{background:rgba(248,113,113,.14);color:#fca5a5}
+#trRes{font-size:24px;font-weight:700;letter-spacing:-.025em;font-variant-numeric:tabular-nums;margin:var(--s1) 0;background:linear-gradient(110deg,#fff 30%,var(--acc) 70%,var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent;overflow-wrap:anywhere}
+.cp{width:100%;margin-top:var(--s4);min-height:52px;border:0;border-radius:16px;background:linear-gradient(135deg,#7f9cff,#a97dff);color:#fff;font:inherit;font-weight:700;cursor:pointer;box-shadow:0 10px 24px -10px #7f9cff}
+.tcard{padding:var(--s4) var(--s5) var(--s5)}.mode{margin:0 0 var(--s4)}.mode .chip{font-size:15px}
+.tamt{all:unset;flex:1;min-width:0;font-size:44px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;caret-color:var(--acc)}
+#trv .amt{margin-bottom:var(--s3)}
+.tres{margin-top:var(--s2)}#trOut{font-size:40px;font-weight:800;letter-spacing:-.03em;line-height:1.15;font-variant-numeric:tabular-nums;background:linear-gradient(110deg,#fff 30%,var(--acc) 70%,var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent;overflow-wrap:anywhere}
+#trOut .or2{font-size:30px;opacity:.85}#trOut .or{font-size:16px;font-weight:600;-webkit-text-fill-color:var(--mut);margin:0 6px}.rsub{font-size:13px;color:var(--mut);margin-top:4px}
+.cut{margin-top:6px;font-size:14px;font-weight:650;color:#6ee7b7}.cut.dn{color:#fca5a5}.mrow .mch{gap:4px}.mrow .mch .chip{min-width:0;font-size:12.5px}.mrow{display:flex;align-items:center;gap:var(--s3);margin-top:var(--s4)}.mrow .mch{flex:1;margin:0}
+.det{margin-top:var(--s4);border-top:1px solid var(--line2);padding-top:var(--s3)}.det summary{cursor:pointer;color:var(--mut);font-size:14px;font-weight:600;padding:6px 0;list-style:none}.det summary::before{content:"▸ ";}.det[open] summary::before{content:"▾ "}
+.det .lbl{margin-top:var(--s3)}
 @media (min-width:700px){main{padding-top:64px}}
 html.static *{animation-play-state:paused;transition:none!important}html.static .row{animation:none!important}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -65,6 +88,8 @@ html.static *{animation-play-state:paused;transition:none!important}html.static 
 <div class="blobs" aria-hidden="true"><div class="blob"></div><div class="blob"></div><div class="blob"></div><div class="blob"></div></div>
 <main id="main">
 <header><h1>Converter</h1><div class="upd" aria-live="polite"><span class="dot" id="dot"></span><span id="upd">Loading rates…</span></div></header>
+<nav class="glass tabs" role="tablist"><button class="tab on" id="tabC" role="tab">Convert</button><button class="tab" id="tabT" role="tab">Friend transfer</button></nav>
+<div id="cv">
 <section class="glass card" id="card">
 <label class="lbl" for="amount">Amount</label>
 <div class="amt"><span class="sym" id="sym"></span><input id="amount" inputmode="decimal" autocomplete="off" aria-label="Amount to convert" value="100"></div>
@@ -78,7 +103,24 @@ html.static *{animation-play-state:paused;transition:none!important}html.static 
 </section>
 <h2>Across your ports</h2>
 <section class="glass list" id="list" aria-label="Conversions to favourite currencies"></section>
-<div class="foot">Rates: fawazahmed0 currency-api (daily) · fallback open.er-api.com · works offline</div>
+</div>
+<div id="trv">
+<section class="glass card tcard">
+<div class="seg mode" id="trMode"><button class="chip" data-m="A">They give me</button><button class="chip" data-m="B">They want sent</button></div>
+<label class="lbl" for="trAmt" id="trAl">Amount</label>
+<div class="amt"><span class="sym" id="trSym">Rp</span><input id="trAmt" inputmode="decimal" autocomplete="off" aria-label="Amount" class="tamt"></div>
+<div class="seg" id="trCur"></div>
+<div class="res tres" aria-live="polite"><div class="lbl" id="trRl">Send them</div><div id="trOut"></div><div class="rsub" id="trSub"></div><div class="cut" id="trCut"></div></div>
+<div class="mrow"><span class="lbl">Margin</span><div class="mch" id="trMch"></div></div>
+<button class="cp" id="trCopy">Copy message</button>
+<details class="det"><summary>Details · fees & funding</summary>
+<span class="lbl">You fund it with</span><div class="seg" id="trFund"></div>
+<div class="two"><div><label class="lbl" for="trF">Bank fee (Rp)</label><input id="trF" class="fld" inputmode="numeric" placeholder="0"></div>
+<div><label class="lbl" for="trN">Network fee (<span id="trNc">USDT</span>)</label><input id="trN" class="fld" inputmode="decimal" placeholder="0"></div></div>
+<div class="bd" id="trBd"></div></details>
+</section>
+</div>
+<div class="foot">Rates: fawazahmed0 currency-api (daily) · fallback open.er-api.com · USDT/USDC: Binance live, fallback CoinGecko · works offline</div>
 </main>
 <dialog id="dlg" aria-label="Select currency"><div class="glass"><input id="q" placeholder="Search currency" aria-label="Search currency"><div id="all"></div></div></dialog>
 <script>
@@ -99,15 +141,61 @@ $("resLbl").textContent=nm(st.t)[0];const v=conv(amt(),st.f,st.t);
 if(isFinite(v)){countTo(v,st.t);const r=conv(1,st.f,st.t);$("rate").textContent=`1 ${st.f} = ${new Intl.NumberFormat(undefined,{maximumSignificantDigits:6}).format(r)} ${st.t}`}else{$("result").textContent="—";$("rate").textContent=rates?"Rate unavailable":"Waiting for rates…"}
 $("favs").innerHTML=FAV.map(c=>`<button class="chip fav${c==st.t?" on":""}" data-c="${c}" aria-pressed="${c==st.t}"><span class="flag">${nm(c)[1]}</span>${c}</button>`).join("");
 const L=FAV.filter(c=>c!=st.f);$("list").innerHTML=L.map((c,i)=>{const x=conv(amt(),st.f,c);return`<div class="row" role="button" tabindex="0" data-c="${c}" style="animation-delay:${full?i*50:0}ms;${full?"":"animation:none"}"><span class="flag" aria-hidden="true">${nm(c)[1]}</span><div><div class="code">${c}</div><div class="nm" style="font-size:12px;color:var(--mut)">${nm(c)[0]}</div></div><div class="v">${isFinite(x)?fmt(x,c):"—"}<small>1 ${st.f} = ${isFinite(x)?new Intl.NumberFormat(undefined,{maximumSignificantDigits:5}).format(conv(1,st.f,c)):"—"}</small></div></div>`}).join("")}
+
+const TR=Object.assign({md:"B",c:"USD",m:"2",f:"0",a:"1000000",ag:"100",s:"USDT",n:"0"},JSON.parse(localStorage.getItem(LS+":tr2")||"{}"));if(/modeA/.test(location.search))TR.md="A";
+const idf=n=>new Intl.NumberFormat("id-ID").format(n),pn=v=>parseInt(String(v).replace(/\D/g,""))||0,pf=v=>parseFloat(String(v).replace(/,/g,""))||0;
+let trMsg="",CR=JSON.parse(localStorage.getItem(LS+":cr")||"null");N.USDT=["Tether","₮"];N.USDC=["USD Coin","🪙"];
+async function crLoad(){let r=null,src="";
+try{const j=await (await fetch('https://api.binance.com/api/v3/ticker/price?symbols=%5B%22USDTIDR%22,%22USDCIDR%22%5D')).json();r={};j.forEach(x=>r[x.symbol.slice(0,4)]=+x.price);if(!(r.USDT>0&&r.USDC>0))throw 0;src="Binance"}catch(e){
+try{const j=await (await fetch("https://api.coingecko.com/api/v3/simple/price?ids=tether,usd-coin&vs_currencies=idr")).json();r={USDT:j.tether.idr,USDC:j["usd-coin"].idr};if(!(r.USDT>0))throw 0;src="CoinGecko"}catch(e){r=null}}
+if(r){CR={r,src,t:Date.now()};localStorage.setItem(LS+":cr",JSON.stringify(CR))}tr()}
+const live=c=>CR&&CR.r[c]&&Date.now()-CR.t<6*3600e3;
+const coin=c=>live(c)?CR.r[c]:conv(1,"USD","IDR");
+// IDR per unit of currency c, priced on funding coin sell rate
+const rateOf=c=>c=="USDC"||c=="USDT"?coin(c):c=="SGD"?coin(TR.s)*conv(1,"SGD","USD"):coin(TR.s);
+const SYM={USD:"US$ ",SGD:"S$ ",USDT:"",USDC:""},TL=c=>c.startsWith("USD")&&c!="USD"?" "+c:"";
+const n2=v=>new Intl.NumberFormat("en",{minimumFractionDigits:2,maximumFractionDigits:2}).format(v),rf=v=>new Intl.NumberFormat("en",{maximumFractionDigits:0}).format(v);
+const M=(v,c)=>SYM[c]+n2(v)+TL(c),up10=v=>Math.ceil(v*10-1e-6)/10;
+function tr(){localStorage.setItem(LS+":tr2",JSON.stringify(TR));const A=TR.md=="A";
+document.querySelectorAll("#trMode .chip").forEach(b=>{b.classList.toggle("on",b.dataset.m==TR.md);b.setAttribute("aria-pressed",b.dataset.m==TR.md)});
+const btn=(arr,k)=>arr.map(c=>`<button class="chip${c==TR[k]?" on":""}" data-c="${c}" aria-pressed="${c==TR[k]}">${c}</button>`).join("");
+$("trCur").style.display=A?"":"none";if(A)$("trCur").innerHTML=btn(["USD","SGD","USDT","USDC"],"c");
+$("trFund").innerHTML=btn(["USDT","USDC"],"s");$("trNc").textContent=TR.s;
+$("trAl").textContent=A?"They give me":"They want sent to Indonesia";$("trSym").textContent=A?(SYM[TR.c].trim()||TR.c):"Rp";$("trRl").textContent=A?"Send them":"They pay you";
+const m=pf(TR.m);$("trMch").innerHTML=[0,1,2,3,4,5].map(x=>`<button class="chip${x==m?" on":""}" data-m="${x}">${x}%</button>`).join("");
+const f=pn(TR.f),nf=pf(TR.n),R=coin(TR.s),k=1+m/100,feeI=f+nf*R;
+if(!isFinite(R)){$("trOut").textContent="—";$("trCut").textContent="";$("trSub").textContent=rates?"Rate unavailable":"Waiting for rates…";trMsg="";return}
+let I,pays=[],cur=A?TR.c:"USD";
+if(A){const P=pf(TR.ag),rc=rateOf(TR.c);I=Math.max(0,Math.floor((P*rc/k-feeI)/1000)*1000);pays=[[P,TR.c]];
+$("trOut").textContent="Rp "+idf(I);$("trSub").textContent=`for ${M(P,TR.c)} · 1 ${TR.c} = ${rf(rc)} IDR · ${m}% margin`;
+trMsg=`You give me ${M(P,TR.c)} → I send Rp ${idf(I)} (rate 1 ${TR.c} = ${rf(rc/k)} IDR)`}
+else{I=pn(TR.a);const u=up10((I+feeI)/rateOf("USD")*k),sg=up10((I+feeI)/rateOf("SGD")*k);pays=[[u,"USD"]];
+$("trOut").innerHTML=`<div>${M(u,"USD")}</div><div class="or2">${M(sg,"SGD")}</div>`;$("trSub").textContent=`for Rp ${idf(I)} · ${m}% margin`;
+trMsg=`Send Rp ${idf(I)} → you pay me US$ ${n2(u)} or S$ ${n2(sg)}`}
+const P0=pays[0][0],c0=pays[0][1],cost=(I+f)/R+nf,got=P0*rateOf(c0)/R,pl=got-cost;
+const ci=pl*R,cu=pl*R/rateOf("USD"),ok=pl>=-0.005;$("trCut").className="cut"+(ok?"":" dn");$("trCut").textContent=`Your cut ≈ ${ok?"+":"−"}Rp ${idf(Math.round(Math.abs(ci)))} · ${ok?"+":"−"}US$ ${n2(Math.abs(cu))}`;
+$("trBd").innerHTML=`<div>${TR.s} sell rate · ${live(TR.s)?CR.src+" live":"USD fallback"}<b>${rf(R)} IDR</b></div><div>USD/SGD daily cross<b>1 SGD = ${conv(1,"SGD","USD").toFixed(4)} USD</b></div><div>Your cost<b>${n2(cost)} ${TR.s}</b></div><div>You receive (${c0})<b>≈ ${n2(got)} ${TR.s}</b></div><div>${pl>=-0.005?"Profit":"Loss"}<b style="color:${pl>=-0.005?"#6ee7b7":"#fca5a5"}">${pl>=-0.005?"+":"−"}${n2(Math.abs(pl))} ${TR.s}</b></div>`}
+function trInp(){const A=TR.md=="A";$("trAmt").value=A?TR.ag:idf(pn(TR.a));$("trAmt").inputMode=A?"decimal":"numeric"}
+$("trAmt").oninput=e=>{if(TR.md=="A"){TR.ag=e.target.value.replace(/[^\d.]/g,"");e.target.value=TR.ag}else{TR.a=String(pn(e.target.value));e.target.value=pn(TR.a)?idf(pn(TR.a)):""}tr()};
+$("trMode").onclick=e=>{const b=e.target.closest("[data-m]");if(b){TR.md=b.dataset.m;trInp();tr()}};
+$("trCur").onclick=e=>{const b=e.target.closest("[data-c]");if(b){TR.c=b.dataset.c;tr()}};
+$("trFund").onclick=e=>{const b=e.target.closest("[data-c]");if(b){TR.s=b.dataset.c;tr()}};
+$("trMch").onclick=e=>{const b=e.target.closest("[data-m]");if(b){TR.m=b.dataset.m;tr()}};
+$("trF").value=pn(TR.f)?idf(pn(TR.f)):"";$("trF").oninput=e=>{TR.f=String(pn(e.target.value));e.target.value=pn(TR.f)?idf(pn(TR.f)):"";tr()};
+$("trN").value=pf(TR.n)?TR.n:"";$("trN").oninput=e=>{TR.n=e.target.value.replace(/[^\d.]/g,"");e.target.value=TR.n;tr()};
+$("trCopy").onclick=async()=>{if(!trMsg)return;try{await navigator.clipboard.writeText(trMsg)}catch(e){const t=document.createElement("textarea");t.value=trMsg;document.body.appendChild(t);t.select();document.execCommand("copy");t.remove()}$("trCopy").textContent="Copied ✓";setTimeout(()=>$("trCopy").textContent="Copy message",1500)};
+trInp();crLoad();setInterval(crLoad,300e3);
+function tab(t){document.body.classList.toggle("tr",t);$("tabT").classList.toggle("on",t);$("tabC").classList.toggle("on",!t);$("tabT").setAttribute("aria-selected",t);$("tabC").setAttribute("aria-selected",!t);localStorage.setItem(LS+":tab",t?1:0);if(t)tr()}
+$("tabC").onclick=()=>tab(false);$("tabT").onclick=()=>tab(true);tab(/transfer/.test(location.search)||localStorage.getItem(LS+":tab")=="1");
 function ago(){if(!ts)return;const d=new Date(ts).toLocaleDateString(undefined,{day:"numeric",month:"short"});$("upd").textContent="Daily rate · "+d+(navigator.onLine?"":" · offline");$("dot").className="dot"+(navigator.onLine&&(Date.now()-ts)<86400e3*2.5?"":" off")}
 const SRC=["https://latest.currency-api.pages.dev/v1/currencies/usd.json","https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json"];
 async function fa(u){const j=await (await fetch(u,{cache:"no-cache"})).json();const r={};for(const k in j.usd)r[k.toUpperCase()]=j.usd[k];if(!r.EUR)throw 0;return{r,t:Date.parse(j.date+"T12:00:00Z")}}
 async function er(){const j=await (await fetch("https://open.er-api.com/v6/latest/USD")).json();if(j.result!="success")throw 0;return{r:j.rates,t:j.time_last_update_unix*1e3}}
-async function load(){const c=JSON.parse(localStorage.getItem(LS+":r")||"null");if(c){rates=c.r;ts=c.t;render(1);ago()}
+async function load(){const c=JSON.parse(localStorage.getItem(LS+":r")||"null");if(c){rates=c.r;ts=c.t;render(1);ago();tr()}
 const got=(await Promise.allSettled([...SRC.map(fa),er()])).filter(x=>x.status=="fulfilled").map(x=>x.value);
 if(!got.length){if(!c)$("upd").textContent="Offline · no cached rates";$("dot").className="dot off";return}
 const best=got.sort((x,y)=>y.t-x.t)[0];rates=best.r;ts=best.t;
-localStorage.setItem(LS+":r",JSON.stringify({r:rates,t:ts}));render(!c);ago();document.body.dataset.ready=1}
+localStorage.setItem(LS+":r",JSON.stringify({r:rates,t:ts}));render(!c);tr();ago();document.body.dataset.ready=1}
 setInterval(ago,60000);setInterval(load,3600e3);
 $("amount").value=st.a;$("amount").addEventListener("input",e=>{let v=e.target.value.replace(/[^\d.,]/g,"");st.a=v;e.target.value=v;render(0)});
 $("amount").addEventListener("blur",e=>{const n=amt();e.target.value=n?new Intl.NumberFormat(undefined,{maximumFractionDigits:2}).format(n):"";});
