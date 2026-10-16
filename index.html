@@ -1,0 +1,123 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light dark"><meta name="theme-color" content="#0b1020">
+<title>Glass Converter</title>
+<style>
+:root{--bg:#eef1f8;--fg:#0d1326;--mut:rgba(13,19,38,.55);--glass:rgba(255,255,255,.42);--edge:rgba(255,255,255,.75);--edge2:rgba(255,255,255,.25);--shadow:0 20px 50px -18px rgba(40,50,100,.35);--b1:#7aa8ff;--b2:#ff9ad5;--b3:#7ff0d0;--b4:#ffd27a;--acc:#3a6cff}
+@media (prefers-color-scheme:dark){:root{--bg:#070a16;--fg:#f2f5ff;--mut:rgba(230,236,255,.55);--glass:rgba(255,255,255,.07);--edge:rgba(255,255,255,.28);--edge2:rgba(255,255,255,.06);--shadow:0 24px 60px -20px rgba(0,0,0,.7);--b1:#3d5cff;--b2:#c13bff;--b3:#00c2a8;--b4:#ff7a45;--acc:#8fb0ff}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--fg);font:16px/1.3 -apple-system,BlinkMacSystemFont,"SF Pro Display","Inter","Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+.blobs{position:fixed;inset:-20%;z-index:0;filter:blur(60px) saturate(140%);pointer-events:none}
+.blob{position:absolute;width:60vmax;height:60vmax;border-radius:50%;opacity:.75;mix-blend-mode:normal;animation:m 26s ease-in-out infinite alternate}
+.blob:nth-child(1){background:radial-gradient(circle,var(--b1),transparent 65%);left:-10%;top:-5%}
+.blob:nth-child(2){background:radial-gradient(circle,var(--b2),transparent 65%);right:-15%;top:20%;animation-duration:32s;animation-delay:-8s}
+.blob:nth-child(3){background:radial-gradient(circle,var(--b3),transparent 65%);left:5%;bottom:-15%;animation-duration:38s;animation-delay:-14s}
+.blob:nth-child(4){background:radial-gradient(circle,var(--b4),transparent 65%);right:0;bottom:-25%;width:45vmax;height:45vmax;animation-duration:29s;opacity:.55}
+@keyframes m{0%{transform:translate(0,0) scale(1) rotate(0)}33%{transform:translate(8vmax,6vmax) scale(1.15) rotate(40deg)}66%{transform:translate(-6vmax,10vmax) scale(.9) rotate(-20deg)}100%{transform:translate(4vmax,-6vmax) scale(1.1) rotate(15deg)}}
+main{position:relative;z-index:1;max-width:460px;margin:0 auto;padding:max(18px,env(safe-area-inset-top)) 16px 40px;transform-style:preserve-3d}
+.glass{position:relative;background:var(--glass);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border-radius:30px;box-shadow:var(--shadow),inset 0 1px 0 var(--edge),inset 0 -1px 0 var(--edge2),inset 0 0 30px rgba(255,255,255,.06);overflow:hidden}
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(140deg,var(--edge),transparent 40%,transparent 60%,var(--edge2));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.glass::after{content:"";position:absolute;left:-30%;top:-60%;width:160%;height:90%;background:radial-gradient(ellipse at 50% 100%,rgba(255,255,255,.22),transparent 60%);pointer-events:none;transform:translate(var(--sx,0),var(--sy,0));transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+header{display:flex;justify-content:space-between;align-items:center;padding:6px 6px 16px}
+h1{font-size:22px;font-weight:700;letter-spacing:-.02em;margin:0}
+.upd{font-size:12px;color:var(--mut);display:flex;align-items:center;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:#2ecc71;box-shadow:0 0 8px #2ecc71}.dot.off{background:#f39c12;box-shadow:0 0 8px #f39c12}
+.card{padding:20px 20px 22px;transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.lbl{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:var(--mut);font-weight:600}
+.amt{display:flex;align-items:baseline;gap:8px;margin:6px 0 16px}
+.amt .sym{font-size:26px;color:var(--mut);font-weight:500}
+#amount{all:unset;width:100%;font-size:52px;font-weight:700;letter-spacing:-.035em;font-variant-numeric:tabular-nums;caret-color:var(--acc)}
+.pair{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:10px}
+.chip{position:relative;overflow:hidden;display:flex;align-items:center;gap:10px;min-width:0;padding:12px 14px;border-radius:22px;border:0;color:inherit;font:inherit;cursor:pointer;background:rgba(255,255,255,.18);box-shadow:inset 0 1px 0 var(--edge),inset 0 0 0 1px var(--edge2);transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .3s}
+.chip:active{transform:scale(.95)}
+.flag{font-size:26px;line-height:1}.code{font-weight:700;font-size:17px}.nm{font-size:11px;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.chip div{display:flex;overflow:hidden;flex-direction:column;align-items:flex-start;min-width:0}
+#swap{width:48px;height:48px;border-radius:50%;border:0;cursor:pointer;color:var(--fg);background:linear-gradient(145deg,rgba(255,255,255,.5),rgba(255,255,255,.1));box-shadow:inset 0 1px 0 var(--edge),0 8px 20px -8px rgba(0,0,0,.4);transition:transform .7s cubic-bezier(.34,1.56,.64,1);position:relative;overflow:hidden}
+#swap svg{width:22px;height:22px}
+.res{margin-top:20px;padding-top:18px;border-top:1px solid var(--edge2)}
+#result{font-size:40px;font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin:4px 0 2px;background:linear-gradient(120deg,var(--fg),var(--acc));-webkit-background-clip:text;background-clip:text;color:transparent;word-break:break-all}
+#rate{font-size:13px;color:var(--mut)}
+.favs{display:flex;gap:8px;overflow-x:auto;padding:16px 2px 4px;scrollbar-width:none}.favs::-webkit-scrollbar{display:none}
+.fav{flex:0 0 auto;padding:9px 14px;border-radius:999px;font-size:14px;font-weight:600}
+.fav.on{background:var(--acc);color:#fff;box-shadow:0 6px 18px -6px var(--acc)}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--mut);margin:24px 8px 10px}
+.list{padding:6px}
+.row{position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:22px;cursor:pointer;transition:background .3s,transform .35s cubic-bezier(.34,1.56,.64,1);animation:in .6s cubic-bezier(.2,.8,.2,1) both}
+.row:active{transform:scale(.97)}.row:hover{background:rgba(255,255,255,.1)}
+.row+.row::before{content:"";position:absolute;top:0;left:60px;right:14px;height:1px;background:var(--edge2)}
+.row .v{margin-left:auto;text-align:right;font-weight:650;font-variant-numeric:tabular-nums;font-size:17px}
+.row .v small{display:block;font-size:11px;color:var(--mut);font-weight:500}
+@keyframes in{from{opacity:0;transform:translateY(12px)}}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:rp .6s ease-out forwards;pointer-events:none}
+@keyframes rp{to{transform:scale(4);opacity:0}}
+dialog{border:0;padding:0;background:transparent;color:inherit;width:min(440px,94vw);max-height:80vh}
+dialog::backdrop{background:rgba(0,0,0,.25);backdrop-filter:blur(6px)}
+dialog[open] .glass{animation:pop .45s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{from{transform:translateY(30px) scale(.94);opacity:0}}
+#q{all:unset;display:block;width:calc(100% - 28px);margin:14px;padding:12px 16px;border-radius:16px;background:rgba(255,255,255,.15);box-shadow:inset 0 0 0 1px var(--edge2)}
+#all{max-height:60vh;overflow:auto;padding:0 6px 8px}
+.foot{text-align:center;font-size:11px;color:var(--mut);margin-top:22px}
+html.static *{animation-play-state:paused;transition:none!important}html.static .row{animation:none!important}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<div class="blobs" aria-hidden="true"><div class="blob"></div><div class="blob"></div><div class="blob"></div><div class="blob"></div></div>
+<main id="main">
+<header><h1>Converter</h1><div class="upd" aria-live="polite"><span class="dot" id="dot"></span><span id="upd">Loading rates…</span></div></header>
+<section class="glass card" id="card">
+<label class="lbl" for="amount">Amount</label>
+<div class="amt"><span class="sym" id="sym"></span><input id="amount" inputmode="decimal" autocomplete="off" aria-label="Amount to convert" value="100"></div>
+<div class="pair">
+<button class="chip" id="fromBtn" aria-label="Choose source currency"></button>
+<button id="swap" aria-label="Swap currencies"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v14m0 0-3-3m3 3 3-3M17 20V6m0 0-3 3m3-3 3 3"/></svg></button>
+<button class="chip" id="toBtn" aria-label="Choose target currency"></button>
+</div>
+<div class="res"><div class="lbl" id="resLbl">Result</div><div id="result" aria-live="polite">—</div><div id="rate"></div></div>
+<div class="favs" id="favs" role="group" aria-label="Quick pick target currency"></div>
+</section>
+<h2>Across your ports</h2>
+<section class="glass list" id="list" aria-label="Conversions to favourite currencies"></section>
+<div class="foot">Rates: open.er-api.com · works offline from cache</div>
+</main>
+<dialog id="dlg" aria-label="Select currency"><div class="glass"><input id="q" placeholder="Search currency" aria-label="Search currency"><div id="all"></div></div></dialog>
+<script>
+const N={USD:["US Dollar","🇺🇸"],EUR:["Euro","🇪🇺"],SGD:["Singapore Dollar","🇸🇬"],MYR:["Malaysian Ringgit","🇲🇾"],IDR:["Indonesian Rupiah","🇮🇩"],PHP:["Philippine Peso","🇵🇭"],GBP:["British Pound","🇬🇧"],JPY:["Japanese Yen","🇯🇵"],CNY:["Chinese Yuan","🇨🇳"],HKD:["Hong Kong Dollar","🇭🇰"],THB:["Thai Baht","🇹🇭"],VND:["Vietnamese Dong","🇻🇳"],KRW:["South Korean Won","🇰🇷"],TWD:["Taiwan Dollar","🇹🇼"],AUD:["Australian Dollar","🇦🇺"],NZD:["NZ Dollar","🇳🇿"],INR:["Indian Rupee","🇮🇳"],BND:["Brunei Dollar","🇧🇳"],AED:["UAE Dirham","🇦🇪"],SAR:["Saudi Riyal","🇸🇦"],CHF:["Swiss Franc","🇨🇭"],CAD:["Canadian Dollar","🇨🇦"],MOP:["Macanese Pataca","🇲🇴"],KHR:["Cambodian Riel","🇰🇭"],LKR:["Sri Lankan Rupee","🇱🇰"],NPR:["Nepalese Rupee","🇳🇵"],BDT:["Bangladeshi Taka","🇧🇩"],PKR:["Pakistani Rupee","🇵🇰"],MMK:["Myanmar Kyat","🇲🇲"],LAK:["Lao Kip","🇱🇦"],TRY:["Turkish Lira","🇹🇷"],SEK:["Swedish Krona","🇸🇪"],NOK:["Norwegian Krone","🇳🇴"],DKK:["Danish Krone","🇩🇰"],ZAR:["South African Rand","🇿🇦"],MXN:["Mexican Peso","🇲🇽"],BRL:["Brazilian Real","🇧🇷"],RUB:["Russian Ruble","🇷🇺"],QAR:["Qatari Riyal","🇶🇦"],KWD:["Kuwaiti Dinar","🇰🇼"]};
+const FAV=["SGD","MYR","IDR","PHP","USD","EUR"],$=s=>document.getElementById(s),LS="glassfx";
+let rates=null,ts=0,st=JSON.parse(localStorage.getItem(LS+":st")||'{"a":"100","f":"SGD","t":"IDR"}');
+const h=location.hash.slice(1).split(",");if(h.length==3){st={a:h[0],f:h[1].toUpperCase(),t:h[2].toUpperCase()}}
+const nm=c=>(N[c]||[c,"🏳️"]);
+const dec=c=>["IDR","JPY","KRW","VND","KHR","LAK","MMK"].includes(c)?0:2;
+const fmt=(v,c)=>SY[c]&&SY[c].includes("$")?SY[c]+new Intl.NumberFormat(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}).format(v):new Intl.NumberFormat(undefined,{style:"currency",currency:c,currencyDisplay:"narrowSymbol",minimumFractionDigits:dec(c),maximumFractionDigits:dec(c)}).format(v);
+const SY={SGD:'S$',MYR:'RM',IDR:'Rp',PHP:'₱',USD:'US$',EUR:'€',AUD:'A$',HKD:'HK$'};const sym=c=>{if(SY[c])return SY[c];try{return new Intl.NumberFormat("en",{style:"currency",currency:c,currencyDisplay:"narrowSymbol"}).formatToParts(0).find(p=>p.type=="currency").value}catch(e){return c}};
+const amt=()=>parseFloat(String(st.a).replace(/,/g,""))||0;
+const conv=(v,f,t)=>rates&&rates[f]&&rates[t]?v/rates[f]*rates[t]:NaN;
+function chip(el,c){const[n,f]=nm(c);el.innerHTML=`<span class="flag" aria-hidden="true">${f}</span><div><span class="code">${c}</span><span class="nm">${n}</span></div>`;el.setAttribute("aria-label",(el.id=="fromBtn"?"From ":"To ")+n+", change")}
+const STATIC=/static/.test(location.search);if(STATIC)document.documentElement.classList.add('static');let cur=0,raf;function countTo(v,c){if(STATIC){$('result').textContent=fmt(v,c);cur=v;return}cancelAnimationFrame(raf);const s=isFinite(cur)?cur:0,t0=performance.now(),d=700;(function step(n){const p=Math.min(1,(n-t0)/d),e=1-Math.pow(1-p,4);cur=s+(v-s)*e;$("result").textContent=fmt(cur,c);if(p<1)raf=requestAnimationFrame(step);else cur=v})(t0)}
+function render(full){localStorage.setItem(LS+":st",JSON.stringify(st));chip($("fromBtn"),st.f);chip($("toBtn"),st.t);$("sym").textContent=sym(st.f);
+$("resLbl").textContent=nm(st.t)[0];const v=conv(amt(),st.f,st.t);
+if(isFinite(v)){countTo(v,st.t);const r=conv(1,st.f,st.t);$("rate").textContent=`1 ${st.f} = ${new Intl.NumberFormat(undefined,{maximumSignificantDigits:6}).format(r)} ${st.t}`}else{$("result").textContent="—";$("rate").textContent=rates?"Rate unavailable":"Waiting for rates…"}
+$("favs").innerHTML=FAV.map(c=>`<button class="chip fav${c==st.t?" on":""}" data-c="${c}" aria-pressed="${c==st.t}">${nm(c)[1]} ${c}</button>`).join("");
+const L=FAV.filter(c=>c!=st.f);$("list").innerHTML=L.map((c,i)=>{const x=conv(amt(),st.f,c);return`<div class="row" role="button" tabindex="0" data-c="${c}" style="animation-delay:${full?i*50:0}ms;${full?"":"animation:none"}"><span class="flag" aria-hidden="true">${nm(c)[1]}</span><div><div class="code">${c}</div><div class="nm" style="font-size:12px;color:var(--mut)">${nm(c)[0]}</div></div><div class="v">${isFinite(x)?fmt(x,c):"—"}<small>1 ${st.f} = ${isFinite(x)?new Intl.NumberFormat(undefined,{maximumSignificantDigits:5}).format(conv(1,st.f,c)):"—"}</small></div></div>`}).join("")}
+function ago(){if(!ts)return;const s=(Date.now()-ts)/1e3,t=s<60?"just now":s<3600?Math.round(s/60)+" min ago":s<86400?Math.round(s/3600)+" h ago":Math.round(s/86400)+" d ago";$("upd").textContent="Updated "+t+(navigator.onLine?"":" · offline");$("dot").className="dot"+(navigator.onLine&&s<86400*2?"":" off")}
+async function load(){const c=JSON.parse(localStorage.getItem(LS+":r")||"null");if(c){rates=c.r;ts=c.t;render(1);ago()}
+try{const j=await (await fetch("https://open.er-api.com/v6/latest/USD")).json();if(j.result!="success")throw 0;rates=j.rates;ts=j.time_last_update_unix*1e3}catch(e){try{const j=await (await fetch("https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json")).json();rates={};for(const k in j.usd)rates[k.toUpperCase()]=j.usd[k];ts=Date.parse(j.date)||Date.now()}catch(e2){if(!c)$("upd").textContent="Offline · no cached rates";$("dot").className="dot off";return}}
+localStorage.setItem(LS+":r",JSON.stringify({r:rates,t:ts}));render(!c);ago();document.body.dataset.ready=1}
+setInterval(ago,30000);
+$("amount").value=st.a;$("amount").addEventListener("input",e=>{let v=e.target.value.replace(/[^\d.,]/g,"");st.a=v;e.target.value=v;render(0)});
+$("amount").addEventListener("blur",e=>{const n=amt();e.target.value=n?new Intl.NumberFormat(undefined,{maximumFractionDigits:2}).format(n):"";});
+$("amount").addEventListener("focus",e=>{e.target.value=String(amt()||"")});
+$("amount").dispatchEvent(new Event("blur"));
+let rot=0;$("swap").onclick=()=>{rot+=180;$("swap").style.transform=`rotate(${rot}deg)`;[st.f,st.t]=[st.t,st.f];cur=0;render(1)};
+$("favs").onclick=e=>{const b=e.target.closest(".fav");if(!b)return;if(b.dataset.c==st.f)st.f=st.t;st.t=b.dataset.c;render(0)};
+$("list").onclick=e=>{const r=e.target.closest(".row");if(r){st.t=r.dataset.c;render(0);window.scrollTo({top:0,behavior:"smooth"})}};
+let tgt;const dlg=$("dlg");function pick(w){tgt=w;$("q").value="";fill();dlg.showModal()}
+function fill(){const q=$("q").value.toLowerCase(),ks=[...new Set([...FAV,...Object.keys(N),...Object.keys(rates||{})])].filter(c=>(rates?rates[c]:1)&&(c+nm(c)[0]).toLowerCase().includes(q));$("all").innerHTML=ks.map(c=>`<div class="row" role="option" tabindex="0" data-c="${c}" style="animation:none"><span class="flag">${nm(c)[1]}</span><div><div class="code">${c}</div><div style="font-size:12px;color:var(--mut)">${nm(c)[0]}</div></div></div>`).join("")}
+$("q").oninput=fill;$("all").onclick=e=>{const r=e.target.closest(".row");if(!r)return;st[tgt]=r.dataset.c;dlg.close();cur=0;render(1)};
+dlg.onclick=e=>{if(e.target==dlg)dlg.close()};
+$("fromBtn").onclick=()=>pick("f");$("toBtn").onclick=()=>pick("t");
+document.addEventListener("keydown",e=>{if(e.key=="Enter"&&e.target.classList.contains("row"))e.target.click()});
+document.addEventListener("pointerdown",e=>{const b=e.target.closest(".chip,#swap,.row");if(!b)return;const r=b.getBoundingClientRect(),s=Math.max(r.width,r.height),d=document.createElement("span");d.className="ripple";d.style.cssText=`width:${s}px;height:${s}px;left:${e.clientX-r.left-s/2}px;top:${e.clientY-r.top-s/2}px`;b.appendChild(d);setTimeout(()=>d.remove(),650)});
+function tilt(x,y){$("card").style.transform=`perspective(900px) rotateX(${-y*5}deg) rotateY(${x*5}deg)`;document.querySelectorAll(".glass").forEach(g=>{g.style.setProperty("--sx",x*30+"px");g.style.setProperty("--sy",y*20+"px")})}
+addEventListener("mousemove",e=>tilt(e.clientX/innerWidth-.5,e.clientY/innerHeight-.5));
+addEventListener("deviceorientation",e=>{if(e.gamma!=null)tilt(Math.max(-1,Math.min(1,e.gamma/45))*.5,Math.max(-1,Math.min(1,(e.beta-45)/45))*.5)});
+addEventListener("online",load);render(1);load();
+</script></body></html>
