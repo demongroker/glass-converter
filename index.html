@@ -354,12 +354,13 @@ async function buildSeries(f,t,days){
   let series=null;
   if(CRYPTO(f)||CRYPTO(t))series=await binanceDays(f,t,days);
   if(!series){
+    const days_=[];
+    for(let i=days-1;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days_.push(iso(d))}
     const out=[];
-    for(let i=days-1;i>=0;i--){
-      const d=new Date();d.setDate(d.getDate()-i);
-      const day=iso(d);
-      const v=await snapDay(f,t,day);
-      if(v>0)out.push({d:day,v});
+    for(let i=0;i<days_.length;i+=6){                     /* 6 at a time: 90d loads in ~2s, not 13s */
+      const batch=days_.slice(i,i+6);
+      const vals=await Promise.all(batch.map(day=>snapDay(f,t,day).catch(()=>null)));
+      batch.forEach((day,k)=>{if(vals[k]>0)out.push({d:day,v:vals[k]})});
     }
     if(out.length)series=out;
   }
@@ -421,7 +422,7 @@ async function chartTick(){
 $("chRange").onclick=e=>{
   const b=e.target.closest(".chb");if(!b)return;
   chDays=+b.dataset.d;localStorage.setItem(LS+":chd",chDays);
-  [...$("chRange").children].forEach(x=>x.classList.toggle("on",x===b));
+  [...$("chRange").children].forEach(x=>{const on=x===b;x.classList.toggle("on",on);x.setAttribute("aria-pressed",on)});
   chartTick();
 };
 const _render=render;render=function(f){_render(f);chartTick()};
