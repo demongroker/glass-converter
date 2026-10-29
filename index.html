@@ -96,6 +96,19 @@ body:not(.tr) #trv{display:none}body:not(.lg) #lgv{display:none}body.tr #cv,body
 @media (min-width:700px){main{padding-top:64px}}
 html.static *{animation-play-state:paused;transition:none!important}html.static .row{animation:none!important}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* --- rate history chart --- */
+.chartcard{margin-top:var(--s4);padding:var(--s5)}
+.chhead{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--s3);margin-bottom:var(--s3)}
+.chpair{font-size:15px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+.rng{display:flex;gap:4px;background:var(--glass);border:1px solid var(--line2);border-radius:999px;padding:4px}
+.chb{border:0;background:transparent;color:var(--mut);font:600 12px/1 inherit;padding:8px 12px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s}
+.chb.on{background:var(--glass2);color:var(--fg)}
+.chb:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+#chart{display:block;width:100%;height:150px;touch-action:pan-y}
+.chfoot{display:flex;justify-content:space-between;gap:var(--s2);margin-top:var(--s2);font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums}
+.chfoot .up{color:#8fe3a8}.chfoot .down{color:#ff9f9f}
+.chempty{display:grid;place-items:center;height:150px;color:var(--mut2);font-size:13px;text-align:center;padding:0 var(--s4)}
 </style></head><body>
 <div class="blobs" aria-hidden="true"><div class="blob"></div><div class="blob"></div><div class="blob"></div><div class="blob"></div></div>
 <main id="main">
@@ -112,6 +125,12 @@ html.static *{animation-play-state:paused;transition:none!important}html.static 
 </div>
 <div class="res"><div class="lbl" id="resLbl">Result</div><div id="result" aria-live="polite">—</div><div id="rate"></div></div>
 <div class="favs" id="favs" role="group" aria-label="Quick pick target currency"></div>
+</section>
+<section class="glass card chartcard" aria-label="Rate history">
+<div class="chhead"><div><span class="lbl">Rate history</span><div class="chpair" id="chPair">—</div></div>
+<div class="rng" id="chRange" role="group" aria-label="Chart range"><button class="chb on" data-d="7">7d</button><button class="chb" data-d="30">30d</button><button class="chb" data-d="90">90d</button></div></div>
+<canvas id="chart" height="150" role="img" aria-label="Rate trend over time"></canvas>
+<div class="chfoot"><span id="chLo">—</span><span id="chChg">—</span><span id="chHi">—</span></div>
 </section>
 <h2>Across your ports</h2>
 <section class="glass list" id="list" aria-label="Conversions to favourite currencies"></section>
@@ -277,6 +296,137 @@ document.addEventListener("pointerdown",e=>{const b=e.target.closest(".chip,#swa
 function tilt(x,y){document.querySelectorAll(".glass").forEach(g=>{g.style.setProperty("--sx",x*30+"px");g.style.setProperty("--sy",y*20+"px")})}
 addEventListener("mousemove",e=>tilt(e.clientX/innerWidth-.5,e.clientY/innerHeight-.5));
 addEventListener("deviceorientation",e=>{if(e.gamma!=null)tilt(Math.max(-1,Math.min(1,e.gamma/45))*.5,Math.max(-1,Math.min(1,(e.beta-45)/45))*.5)});
+
+/* ================= rate history chart ================= */
+const HKEY=LS+":hist",HDONE=LS+":hdone",HD=()=>JSON.parse(localStorage.getItem(HKEY)||"{}");
+const hsave=o=>{try{localStorage.setItem(HKEY,JSON.stringify(o))}catch(e){}};
+const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const CRYPTO=c=>c==="USDT"||c==="USDC";
+let chDays=+(localStorage.getItem(LS+":chd")||7),chPairKey="",chSeries=[],chLoading=0;
+
+/* Snapshot history: one usd.json per missing day, then cached forever (values never change). */
+async function snapDay(f,t,day){
+  const done=JSON.parse(localStorage.getItem(HDONE)||"{}");
+  if(done[day])return null;
+  const bases=["https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@"+day+"/v1/currencies/usd.json",
+               "https://latest.currency-api.pages.dev/v1/currencies/usd.json"];
+  for(const u of bases){
+    try{
+      const j=await (await fetch(u,{cache:"force-cache"})).json();
+      const a=j.usd, fv=a[f.toLowerCase()], tv=a[t.toLowerCase()];
+      if(!(fv>0&&tv>0))continue;
+      done[day]=1;try{localStorage.setItem(HDONE,JSON.stringify(done))}catch(e){}
+      return tv/fv;
+    }catch(e){}
+  }
+  return null;
+}
+
+async function binanceDays(f,t,days){
+  const sym=(f==="USDT"||f==="USDC")&&t==="IDR"?f+"IDR":null;
+  if(!sym)return null;
+  try{
+    const j=await (await fetch("https://api.binance.com/api/v3/klines?symbol="+sym+"&interval=1d&limit="+days)).json();
+    if(!Array.isArray(j))return null;
+    return j.map(r=>({d:iso(new Date(r[0])),v:+r[4]})).filter(x=>x.v>0);
+  }catch(e){return null}
+}
+
+function localSeries(f,t,pairs){
+  const p=pairs[chPairKey]||{};
+  return Object.keys(p).map(d=>({d,v:p[d]})).filter(x=>x.v>0);
+}
+
+function recordToday(f,t){
+  if(!rates||!isFinite(conv(1,f,t)))return;
+  const all=HD();
+  const v=conv(1,f,t);
+  all[chPairKey]=all[chPairKey]||{};
+  all[chPairKey][iso(new Date())]=v;
+  const keys=Object.keys(all[chPairKey]).sort();
+  while(keys.length>400)delete all[chPairKey][keys.shift()];
+  hsave(all);
+}
+
+async function buildSeries(f,t,days){
+  chPairKey=f+"_"+t;
+  recordToday(f,t);
+  let series=null;
+  if(CRYPTO(f)||CRYPTO(t))series=await binanceDays(f,t,days);
+  if(!series){
+    const out=[];
+    for(let i=days-1;i>=0;i--){
+      const d=new Date();d.setDate(d.getDate()-i);
+      const day=iso(d);
+      const v=await snapDay(f,t,day);
+      if(v>0)out.push({d:day,v});
+    }
+    if(out.length)series=out;
+  }
+  const loc=localSeries(f,t,HD());
+  if(!series||!series.length)series=loc;
+  else{
+    const seen=new Set(series.map(x=>x.d));
+    loc.forEach(x=>{if(!seen.has(x.d))series.push(x)});
+    series.sort((a,b)=>a.d<b.d?-1:1);
+  }
+  return series.slice(-days);
+}
+
+function drawChart(f,t,series){
+  const cv=$("chart"),ctx=cv.getContext("2d");
+  const dpr=Math.min(devicePixelRatio||1,2),W=cv.clientWidth||320,H=150;
+  cv.width=W*dpr;cv.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,W,H);
+  if(!series||series.length<2){
+    ctx.fillStyle="rgba(226,232,255,.4)";ctx.font="13px -apple-system,system-ui,sans-serif";
+    ctx.textAlign="center";ctx.fillText("Not enough history yet — check back tomorrow",W/2,H/2);
+    return;
+  }
+  const vs=series.map(x=>x.v),lo=Math.min(...vs),hi=Math.max(...vs),pad=(hi-lo)*0.15||hi*0.01;
+  const y0=lo-pad,y1=hi+pad,px=i=>i*(W/(series.length-1)),py=v=>H-((v-y0)/(y1-y0))*H;
+  const up=vs[vs.length-1]>=vs[0],stroke=up?"#8fe3a8":"#ff9f9f";
+  const g=ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,up?"rgba(143,227,168,.32)":"rgba(255,159,159,.30)");
+  g.addColorStop(1,"rgba(143,227,168,0)");
+  ctx.beginPath();ctx.moveTo(px(0),H);
+  series.forEach((p,i)=>ctx.lineTo(px(i),py(p.v)));
+  ctx.lineTo(px(series.length-1),H);ctx.closePath();ctx.fillStyle=g;ctx.fill();
+  ctx.beginPath();series.forEach((p,i)=>i?ctx.lineTo(px(i),py(p.v)):ctx.moveTo(px(i),py(p.v)));
+  ctx.strokeStyle=stroke;ctx.lineWidth=2;ctx.lineJoin="round";ctx.lineCap="round";ctx.stroke();
+  const last=series[series.length-1];
+  ctx.beginPath();ctx.arc(px(series.length-1),py(last.v),3.5,0,7);ctx.fillStyle=stroke;ctx.fill();
+  const f6=v=>new Intl.NumberFormat("id-ID",{maximumSignificantDigits:6}).format(v);
+  $("chLo").textContent="low "+f6(lo);$("chHi").textContent="high "+f6(hi);
+  const pct=vs[0]?((vs[vs.length-1]-vs[0])/vs[0]*100):0;
+  const el=$("chChg");
+  el.textContent=(pct>=0?"+":"")+pct.toFixed(2)+"% · "+chDays+"d";
+  el.className=pct>=0?"up":"down";
+}
+
+let chSeq=0,chT=0;
+async function chartTick(){
+  const f=st.f,t=st.t;
+  $("chPair").textContent=f+" → "+t;
+  if(STATIC||!rates)return;
+  const my=++chSeq;
+  clearTimeout(chT);
+  chT=setTimeout(async()=>{
+    const series=await buildSeries(f,t,chDays);
+    if(my!==chSeq)return;                        /* a newer pair/range won */
+    chSeries=series;
+    drawChart(f,t,series);
+  },120);
+}
+$("chRange").onclick=e=>{
+  const b=e.target.closest(".chb");if(!b)return;
+  chDays=+b.dataset.d;localStorage.setItem(LS+":chd",chDays);
+  [...$("chRange").children].forEach(x=>x.classList.toggle("on",x===b));
+  chartTick();
+};
+const _render=render;render=function(f){_render(f);chartTick()};
+addEventListener("resize",()=>drawChart(st.f,st.t,chSeries));
+/* ================= /rate history chart ================= */
 addEventListener("online",load);render(1);load();
 </script><script>if("serviceWorker"in navigator)addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))</script>
 </body></html>
