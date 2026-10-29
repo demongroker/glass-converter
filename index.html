@@ -109,6 +109,11 @@ html.static *{animation-play-state:paused;transition:none!important}html.static 
 .chfoot{display:flex;justify-content:space-between;gap:var(--s2);margin-top:var(--s2);font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums}
 .chfoot .up{color:#8fe3a8}.chfoot .down{color:#ff9f9f}
 .chempty{display:grid;place-items:center;height:150px;color:var(--mut2);font-size:13px;text-align:center;padding:0 var(--s4)}
+
+/* --- fiat vs USDT spread badge --- */
+.spread{display:inline-flex;align-items:center;gap:6px;margin-top:6px;font-size:11px;color:var(--mut);background:var(--glass);border:1px solid var(--line2);border-radius:999px;padding:3px 9px;font-variant-numeric:tabular-nums}
+.spread b{font-weight:700;color:var(--fg)}
+.spread .g{color:#8fe3a8}.spread .r{color:#ff9f9f}
 </style></head><body>
 <div class="blobs" aria-hidden="true"><div class="blob"></div><div class="blob"></div><div class="blob"></div><div class="blob"></div></div>
 <main id="main">
@@ -123,7 +128,7 @@ html.static *{animation-play-state:paused;transition:none!important}html.static 
 <button id="swap" aria-label="Swap currencies"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4v14m0 0-3-3m3 3 3-3M17 20V6m0 0-3 3m3-3 3 3"/></svg></button>
 <button class="chip" id="toBtn" aria-label="Choose target currency"></button>
 </div>
-<div class="res"><div class="lbl" id="resLbl">Result</div><div id="result" aria-live="polite">—</div><div id="rate"></div></div>
+<div class="res"><div class="lbl" id="resLbl">Result</div><div id="result" aria-live="polite">—</div><div id="rate"></div><div id="spread" class="spread" hidden aria-live="polite"></div></div>
 <div class="favs" id="favs" role="group" aria-label="Quick pick target currency"></div>
 </section>
 <section class="glass card chartcard" aria-label="Rate history">
@@ -236,7 +241,7 @@ let D=DEMO?(()=>{const n=new Date(),d=k=>new Date(n.getFullYear(),n.getMonth(),M
 {id:"3",t:d(2),name:"Rizal",md:"B",idr:500000,cur:"USD",amt:28.5,m:2,cutI:11400,cutU:.64,paid:false},
 {id:"4",t:d(4),name:"Budi",md:"A",idr:3510000,cur:"USD",amt:200,m:2,cutI:69900,cutU:3.9,paid:true},
 {id:"5",t:d(6),name:"Dewi",md:"B",idr:1000000,cur:"USD",amt:56.9,m:2,cutI:21000,cutU:1.17,paid:true}]})():JSON.parse(localStorage.getItem(DK)||"[]");
-const dsave=()=>{if(!DEMO)localStorage.setItem(DK,JSON.stringify(D));lg()};
+const dsave=()=>{if(!DEMO){try{localStorage.setItem(DK,JSON.stringify(D))}catch(e){alert("Storage is full — this change was NOT saved. Export a backup, then delete old deals.");return false}}lg();return true};
 const esc=x=>String(x).replace(/[&<>"']/g,c=>"&#"+c.charCodeAt(0)+";");
 const MS=(v,c)=>(SYM[c]!=null?M(v,c):n2(v)+" "+c);
 let mOff=0,sPick="USD";
@@ -266,12 +271,12 @@ const stamp=()=>new Date().toISOString().slice(0,10);
 $("lgExp").onclick=()=>dl(`transfer-deals-${stamp()}.json`,JSON.stringify({app:"glass-converter",v:1,deals:D},null,1),"application/json");
 $("lgCsv").onclick=()=>{const q=v=>`"${String(v).replace(/"/g,'""')}"`;dl(`transfer-deals-${stamp()}.csv`,["date,friend,mode,idr,currency,amount,margin_pct,cut_idr,cut_usd,status",...D.map(x=>[new Date(x.t).toISOString().slice(0,10),q(x.name),x.md=="A"?"they_give":"they_want_sent",x.idr,x.cur,x.amt,x.m,x.cutI,x.cutU,x.paid?"paid":"unpaid"].join(","))].join("\n"),"text/csv")};
 $("lgImp").onclick=()=>$("lgFile").click();
-$("lgFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const j=JSON.parse(await f.text()),arr=Array.isArray(j)?j:j.deals;if(!Array.isArray(arr))throw 0;const ids=new Set(D.map(x=>x.id));let k=0;arr.forEach(x=>{if(x&&x.id&&x.name&&!ids.has(x.id)){D.push(x);k++}});dsave();alert(`Imported ${k} new deal${k==1?"":"s"}.`)}catch(err){alert("That file isn't a valid backup.")}e.target.value=""};
+$("lgFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const j=JSON.parse(await f.text()),arr=Array.isArray(j)?j:j.deals;if(!Array.isArray(arr))throw 0;const ids=new Set(D.map(x=>x.id));let k=0;arr.forEach(x=>{if(x&&x.id&&x.name&&!ids.has(x.id)){D.push(x);k++}});if(dsave())alert(`Imported ${k} new deal${k==1?"":"s"}.`)}catch(err){alert("That file isn't a valid backup.")}e.target.value=""};
 function tab(t){t=+t||0;document.body.classList.toggle("tr",t==1);document.body.classList.toggle("lg",t==2);["tabC","tabT","tabL"].forEach((id,i)=>{$(id).classList.toggle("on",i==t);$(id).setAttribute("aria-selected",i==t)});localStorage.setItem(LS+":tab",t);if(t==1)tr();if(t==2)lg()}
 $("tabC").onclick=()=>tab(0);$("tabT").onclick=()=>tab(1);$("tabL").onclick=()=>tab(2);tab(/log/.test(location.search)?2:/transfer/.test(location.search)?1:localStorage.getItem(LS+":tab"));
 function ago(){if(!ts)return;const d=new Date(ts).toLocaleDateString("id-ID",{day:"numeric",month:"short"});$("upd").textContent="Bank rate · daily · "+d+(navigator.onLine?"":" · offline");$("dot").className="dot"+(navigator.onLine&&(Date.now()-ts)<86400e3*2.5?"":" off")}
 const SRC=["https://latest.currency-api.pages.dev/v1/currencies/usd.json","https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json"];
-async function fa(u){const j=await (await fetch(u,{cache:"no-cache"})).json();const r={};for(const k in j.usd)r[k.toUpperCase()]=j.usd[k];if(!r.EUR)throw 0;return{r,t:Date.parse(j.date+"T12:00:00Z")}}
+async function fa(u){const j=await (await fetch(u,{cache:"no-cache"})).json();const r={};for(const k in j.usd)r[k.toUpperCase()]=j.usd[k];if(!r.EUR)throw 0;const t=Date.parse(j.date+"T12:00:00Z");return{r,t:isFinite(t)?t:0}}
 async function er(){const j=await (await fetch("https://open.er-api.com/v6/latest/USD")).json();if(j.result!="success")throw 0;return{r:j.rates,t:j.time_last_update_unix*1e3}}
 async function load(){const c=JSON.parse(localStorage.getItem(LS+":r")||"null");if(c){rates=c.r;ts=c.t;render(1);ago();tr()}
 const got=(await Promise.allSettled([...SRC.map(fa),er()])).filter(x=>x.status=="fulfilled").map(x=>x.value);
@@ -425,7 +430,24 @@ $("chRange").onclick=e=>{
   [...$("chRange").children].forEach(x=>{const on=x===b;x.classList.toggle("on",on);x.setAttribute("aria-pressed",on)});
   chartTick();
 };
-const _render=render;render=function(f){_render(f);chartTick()};
+
+/* ---- fiat vs USDT spread, and the hardening hooks ---- */
+function spreadTick(){
+  const el=$("spread");
+  try{
+    const fiatUsdIdr=(rates&&rates.USD&&rates.IDR)?rates.IDR/rates.USD:NaN;
+    const crypto=(CR&&CR.r&&CR.r.USDT)||NaN;
+    if(!isFinite(fiatUsdIdr)||!isFinite(crypto)){el.hidden=true;return}
+    const d=(crypto-fiatUsdIdr)/fiatUsdIdr*100, f6=v=>new Intl.NumberFormat("id-ID",{maximumSignificantDigits:6}).format(v);
+    el.hidden=false;
+    el.innerHTML=`USDT <b>${f6(crypto)}</b> vs USD <b>${f6(fiatUsdIdr)}</b> · `+
+      `<span class="${d>=0?"g":"r"}">${(d>=0?"+":"")+d.toFixed(2)}%</span>`;
+    el.setAttribute("aria-label","USDT "+Math.round(crypto)+" versus fiat USD "+Math.round(fiatUsdIdr)+", spread "+(d>=0?"plus":"minus")+" "+Math.abs(d).toFixed(2)+" percent");
+    el.title="Binance USDT/IDR versus USD/IDR from the daily fiat snapshot. The Transfer tab uses USDT; the Convert tab uses fiat.";
+  }catch(e){el.hidden=true}
+}
+addEventListener("load",spreadTick);
+const _render=render;render=function(f){_render(f);chartTick();spreadTick()};
 addEventListener("resize",()=>drawChart(st.f,st.t,chSeries));
 /* ================= /rate history chart ================= */
 addEventListener("online",load);render(1);load();
